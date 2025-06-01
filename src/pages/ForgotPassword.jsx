@@ -1,38 +1,52 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../components/Icon";
+import {
+  clearUsersResponse,
+  postForgotPasswordRequest,
+} from "../services/redux/users/actions";
+import { useDispatch, useSelector } from "react-redux";
+import * as usersSelector from "../services/redux/users/selectors";
+import Loading from "./Loading";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
+  const dispatch = useDispatch();
+
+  const usersResponse = useSelector(usersSelector.selectResponse);
+  const usersLoading = useSelector(usersSelector.selectLoading);
+
   useEffect(() => {
+    dispatch(clearUsersResponse());
     const stored = sessionStorage.getItem("forgotPasswordEmail");
 
     if (stored) {
       setEmail(stored);
     }
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (usersResponse && !sessionStorage.getItem("forgotPasswordEmail")) {
+      sessionStorage.setItem("forgotPasswordEmail", email);
+      sessionStorage.setItem("verifyEmailSentAt", Date.now());
+      navigate("/reset-password");
+    }
+  }, [usersResponse, email, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email.includes("@")) {
-      setError("Introduce un correo válido");
-      return;
-    }
-
-    try {
-      // Simular llamada al backend
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    if (!sessionStorage.getItem("forgotPasswordEmail"))
+      dispatch(postForgotPasswordRequest({ email }));
+    else {
       sessionStorage.setItem("forgotPasswordEmail", email);
-      sessionStorage.setItem("verifyEmailSentAt", Date.now());
       navigate("/reset-password");
-    } catch {
-      setError("No se pudo enviar el código. Inténtalo más tarde.");
     }
   };
+
+  if (usersLoading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-neutral-900 flex items-center justify-center px-4 py-10">
@@ -62,8 +76,6 @@ const ForgotPassword = () => {
               </div>
             </div>
           </div>
-
-          {error && <p className="text-red-400 text-sm">{error}</p>}
 
           <button
             type="submit"

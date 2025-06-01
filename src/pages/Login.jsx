@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Icon from "../components/Icon";
 import * as authSelector from "../services/redux/auth/selectors";
-import { postLoginRequest } from "../services/redux/auth/actions";
+import {
+  clearAuthError,
+  postLoginRequest,
+} from "../services/redux/auth/actions";
 import Loading from "./Loading";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -10,6 +13,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
   const dispatch = useDispatch();
 
@@ -20,10 +24,34 @@ const Login = () => {
   const authError = useSelector(authSelector.selectError);
 
   useEffect(() => {
+    dispatch(clearAuthError());
+    sessionStorage.clear();
+
+    return () => {
+      dispatch(clearAuthError());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
     if (sessionStorage.getItem("_auth-session-token")) {
-      navigate('/groups')
+      navigate("/groups");
     }
-  }, [navigate])
+  }, [navigate]);
+
+  useEffect(() => {
+    if (authError) {
+      setError("Usuario o contraseña incorrectos");
+    } else {
+      setError("");
+    }
+  }, [authError]);
+
+  useEffect(() => {
+    if (authResponse) {
+      sessionStorage.setItem("_auth-session-token", authResponse.accessToken);
+      navigate("/groups");
+    }
+  }, [authResponse, navigate]);
 
   const body = {
     email: email,
@@ -35,13 +63,7 @@ const Login = () => {
     dispatch(postLoginRequest(body));
   };
 
-  if (authResponse) {
-    sessionStorage.setItem("_auth-session-token", authResponse.accessToken);
-
-    navigate("/groups");
-  }
   if (authLoading) return <Loading />;
-  if (authError) return <p>{authError}</p>;
 
   return (
     <div className="min-h-screen bg-neutral-900 flex flex-col items-center justify-center px-4 py-10">
@@ -108,6 +130,8 @@ const Login = () => {
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
+
+          {error && <p className="text-red-400 text-sm">{error}</p>}
 
           <button
             type="submit"

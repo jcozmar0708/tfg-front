@@ -2,8 +2,12 @@ import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useCountdownTimer from "../hooks/useCountdownTimer";
-import { postVerifyEmailRequest, postResendVerificationCodeRequest } from "../services/redux/users/actions";
+import {
+  postVerifyEmailRequest,
+  postResendVerificationCodeRequest,
+} from "../services/redux/users/actions";
 import * as usersSelector from "../services/redux/users/selectors";
+import { formatTime } from "../helpers/formatTime";
 
 const VerifyEmail = ({ email, onBack }) => {
   const [code, setCode] = useState(Array(6).fill(""));
@@ -21,8 +25,7 @@ const VerifyEmail = ({ email, onBack }) => {
 
   useEffect(() => {
     if (usersResponse?.success && usersType == "verifyEmail") {
-      sessionStorage.removeItem("_payload");
-      sessionStorage.removeItem("verifyEmailSentAt");
+      sessionStorage.clear()
       navigate("/login");
     }
   }, [usersResponse, usersType, navigate]);
@@ -60,12 +63,6 @@ const VerifyEmail = ({ email, onBack }) => {
     restartTimer();
     dispatch(postResendVerificationCodeRequest({ email }));
     setError("");
-  };
-
-  const formatTime = (s) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec < 10 ? "0" : ""}${sec}`;
   };
 
   return (

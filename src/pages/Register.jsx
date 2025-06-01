@@ -29,7 +29,7 @@ const Register = () => {
   const usersType = useSelector(usersSelector.selectType)
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("_payload");
+    const stored = sessionStorage.getItem("_payloadRegister");
     const sentAt = sessionStorage.getItem("verifyEmailSentAt");
 
     if (stored && sentAt) {
@@ -43,7 +43,7 @@ const Register = () => {
       if (!sessionStorage.getItem("verifyEmailSentAt"))
         sessionStorage.setItem("verifyEmailSentAt", Date.now());
 
-      sessionStorage.setItem("_payload", JSON.stringify(body));
+      sessionStorage.setItem("_payloadRegister", JSON.stringify(body));
 
       setError("");
       setStep("verify");

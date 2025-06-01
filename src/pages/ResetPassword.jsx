@@ -1,19 +1,67 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../components/Icon";
 import useCountdownTimer from "../hooks/useCountdownTimer";
+import { formatTime } from "../helpers/formatTime";
+import { useDispatch, useSelector } from "react-redux";
+import * as usersSelector from "../services/redux/users/selectors";
+import {
+  clearUsersError,
+  postResetPasswordRequest,
+  postForgotPasswordRequest,
+} from "../services/redux/users/actions";
+import Loading from "./Loading";
 
 const ResetPassword = () => {
-  const email = sessionStorage.getItem("forgotPasswordEmail") || "";
+  const email = sessionStorage.getItem("forgotPasswordEmail");
   const [code, setCode] = useState(Array(6).fill(""));
   const inputRefs = useRef([]);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const [body, setBody] = useState({
+    password: "",
+    confirmPassword: "",
+  });
+
+  const [error, setError] = useState("");
+
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState("");
+
   const { timer, restartTimer } = useCountdownTimer();
+
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  const usersResponse = useSelector(usersSelector.selectResponse);
+  const usersLoading = useSelector(usersSelector.selectLoading);
+  const usersError = useSelector(usersSelector.selectError);
+  const usersType = useSelector(usersSelector.selectType);
+
+  useEffect(() => {
+    const stored = sessionStorage.getItem("_payloadReset");
+
+    if (stored) setBody(JSON.parse(stored));
+  }, []);
+
+  useEffect(() => {
+    if (usersResponse?.success && usersType == "resetPassword") {
+      sessionStorage.clear();
+      setError("");
+      navigate("/login");
+    }
+  }, [usersResponse, usersType, navigate]);
+
+  useEffect(() => {
+    if (usersError) setError(usersError);
+  }, [usersError]);
+
+  const handleChange = (e) => {
+    setBody((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
   const handleCodeChange = (index, value) => {
     if (!/^\d?$/.test(value)) return;
@@ -29,12 +77,12 @@ const ResetPassword = () => {
     e.preventDefault();
 
     const fullCode = code.join("");
-    if (newPassword !== confirmPassword) {
+    if (body.password !== body.confirmPassword) {
       setError("Las contraseñas no coinciden");
       return;
     }
 
-    if (newPassword.length < 6) {
+    if (body.password.length < 6) {
       setError("La contraseña debe tener al menos 6 caracteres");
       return;
     }
@@ -44,22 +92,30 @@ const ResetPassword = () => {
       return;
     }
 
-    try {
-      // Simular llamada al backend
-      await new Promise((res) => setTimeout(res, 500));
-      sessionStorage.removeItem("forgotPasswordEmail");
-      sessionStorage.removeItem("verifyEmailSentAt");
-      navigate("/login");
-    } catch {
-      setError("Error al cambiar la contraseña");
-    }
+    dispatch(
+      postResetPasswordRequest({
+        email: email,
+        code: fullCode,
+        newPassword: body.password,
+      })
+    );
   };
 
-  const formatTime = (s) => {
-    const m = Math.floor(s / 60);
-    const sec = s % 60;
-    return `${m}:${sec < 10 ? "0" : ""}${sec}`;
+  const handleResend = () => {
+    if (timer > 0) return;
+    restartTimer();
+    dispatch(postForgotPasswordRequest({ email }));
+    setError("");
   };
+
+  const handleBack = () => {
+    sessionStorage.setItem("_payloadReset", JSON.stringify(body));
+    setError("");
+    dispatch(clearUsersError());
+    navigate("/forgot-password");
+  };
+
+  if (usersLoading) return <Loading />;
 
   return (
     <div className="min-h-screen bg-neutral-900 flex items-center justify-center px-4 py-10">
@@ -92,7 +148,7 @@ const ResetPassword = () => {
           ) : (
             <button
               type="button"
-              onClick={restartTimer}
+              onClick={handleResend}
               className="text-violet-400 hover:text-violet-300 font-medium text-sm block mx-auto"
             >
               Reenviar código
@@ -100,15 +156,16 @@ const ResetPassword = () => {
           )}
 
           <div className="form-control">
-            <label htmlFor="newPassword" className="label text-neutral-300">
+            <label htmlFor="password" className="label text-neutral-300">
               Nueva contraseña
             </label>
             <div className="relative">
               <input
-                id="newPassword"
+                id="password"
+                name="password"
                 type={showPassword ? "text" : "password"}
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                value={body.password}
+                onChange={handleChange}
                 className="input input-bordered w-full bg-neutral-700 text-white border-neutral-600"
                 required
               />
@@ -132,9 +189,10 @@ const ResetPassword = () => {
             <div className="relative">
               <input
                 id="confirmPassword"
+                name="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                value={body.confirmPassword}
+                onChange={handleChange}
                 className="input input-bordered w-full bg-neutral-700 text-white border-neutral-600"
                 required
               />
@@ -153,12 +211,22 @@ const ResetPassword = () => {
 
           {error && <p className="text-red-400 text-sm">{error}</p>}
 
-          <button
-            type="submit"
-            className="btn btn-primary w-full bg-violet-600 hover:bg-violet-700 text-white border-none"
-          >
-            Cambiar contraseña
-          </button>
+          <div className="flex flex-col gap-3 mt-4">
+            <button
+              type="submit"
+              className="btn btn-primary w-full bg-violet-600 hover:bg-violet-700 text-white border-none disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Cambiar contraseña
+            </button>
+
+            <button
+              type="button"
+              onClick={handleBack}
+              className="text-sm text-neutral-400 hover:text-neutral-200"
+            >
+              ← Volver al formulario
+            </button>
+          </div>
         </form>
       </div>
     </div>
