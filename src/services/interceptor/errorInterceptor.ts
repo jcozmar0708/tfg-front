@@ -8,11 +8,18 @@ export const handleErrors = async (response: Response): Promise<void> => {
   if (response.ok) return;
 
   switch (response.status) {
-    case 401:
+    case 401: {
+      const currentPath = window.location.pathname;
+
+      if (currentPath === "/login") {
+        const error = await response.json();
+        throw new ApiResponseError(error.message);
+      }
+
       sessionStorage.clear();
       window.location.assign("/login");
-
       throw new ApiResponseError();
+    }
 
     case 403:
       redirectToError(403);
