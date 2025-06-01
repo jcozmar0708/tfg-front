@@ -33,6 +33,26 @@ function* postResendVerificationCodeSaga(action) {
   }
 }
 
+function* postForgotPasswordSaga(action) {
+  try {
+    const response = yield call(Api.postForgotPassword, action.payload);
+
+    yield put(Action.postForgotPasswordSuccess(response));
+  } catch (error) {
+    yield put(Action.postForgotPasswordFailure(error.message));
+  }
+}
+
+function* postResetPasswordSaga(action) {
+  try {
+    const response = yield call(Api.postResetPassword, action.payload);
+
+    yield put(Action.postResetPasswordSuccess(response));
+  } catch (error) {
+    yield put(Action.postResetPasswordFailure(error.message));
+  }
+}
+
 export default function* usersSaga() {
   yield takeLatest(Type.POST_REGISTER_REQUEST, postRegisterSaga);
   yield takeLatest(Type.POST_VERIFY_EMAIL_REQUEST, postVerifyEmailSaga);
@@ -40,4 +60,6 @@ export default function* usersSaga() {
     Type.POST_RESEND_VERIFICATION_CODE_REQUEST,
     postResendVerificationCodeSaga
   );
+  yield takeLatest(Type.POST_FORGOT_PASSWORD_REQUEST, postForgotPasswordSaga);
+  yield takeLatest(Type.POST_RESET_PASSWORD_REQUEST, postResetPasswordSaga);
 }
