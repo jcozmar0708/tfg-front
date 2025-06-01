@@ -1,5 +1,13 @@
 import * as Type from "./types";
 
+export const clearUsersResponse = () => ({
+  type: Type.CLEAR_USERS_RESPONSE,
+});
+
+export const clearUsersError = () => ({
+  type: Type.CLEAR_USERS_ERROR,
+});
+
 export const postRegisterRequest = (body) => ({
   type: Type.POST_REGISTER_REQUEST,
   payload: body,
@@ -42,5 +50,35 @@ export const postResendVerificationCodeSuccess = (response) => ({
 
 export const postResendVerificationCodeFailure = (error) => ({
   type: Type.POST_RESEND_VERIFICATION_CODE_FAILURE,
+  payload: error,
+});
+
+export const postForgotPasswordRequest = (body) => ({
+  type: Type.POST_FORGOT_PASSWORD_REQUEST,
+  payload: body,
+});
+
+export const postForgotPasswordSuccess = (response) => ({
+  type: Type.POST_FORGOT_PASSWORD_SUCCESS,
+  payload: response,
+});
+
+export const postForgotPasswordFailure = (error) => ({
+  type: Type.POST_FORGOT_PASSWORD_FAILURE,
+  payload: error,
+});
+
+export const postResetPasswordRequest = (body) => ({
+  type: Type.POST_RESET_PASSWORD_REQUEST,
+  payload: body,
+});
+
+export const postResetPasswordSuccess = (response) => ({
+  type: Type.POST_RESET_PASSWORD_SUCCESS,
+  payload: response,
+});
+
+export const postResetPasswordFailure = (error) => ({
+  type: Type.POST_RESET_PASSWORD_FAILURE,
   payload: error,
 });

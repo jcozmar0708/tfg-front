@@ -8,6 +8,9 @@ const initialState = {
 
 export const authReducer = (state = initialState, action) => {
   switch (action.type) {
+    case Type.CLEAR_AUTH_ERROR:
+      return { ...state, error: null };
+
     case Type.POST_LOGIN_REQUEST:
     case Type.DELETE_LOGOUT_REQUEST:
     case Type.DELETE_LOGOUT_ALL_REQUEST:
