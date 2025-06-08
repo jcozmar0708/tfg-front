@@ -1,7 +1,7 @@
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
 
 const getToken = () => {
-  return sessionStorage.getItem("_auth_session_token");
+  return localStorage.getItem("_auth-session-token");
 };
 
 const buildQueryString = (queryParams: Map<string, string | number>) => {
@@ -29,7 +29,7 @@ export const buildPetition = (
   };
 
   const token = getToken();
-  if (token) headers["Authorization"] = token;
+  if (token) headers["Authorization"] = `Bearer ${token}`;
 
   const init: RequestInit = {
     method: method,
