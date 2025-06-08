@@ -16,7 +16,7 @@ export const handleErrors = async (response: Response): Promise<void> => {
         throw new ApiResponseError(error.message);
       }
 
-      sessionStorage.clear();
+      localStorage.clear();
       window.location.assign("/login");
       throw new ApiResponseError();
     }
