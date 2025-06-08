@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Icon from "../components/Icon";
 import {
+  clearUsersError,
   clearUsersResponse,
   postForgotPasswordRequest,
 } from "../services/redux/users/actions";
@@ -25,12 +26,17 @@ const ForgotPassword = () => {
     if (stored) {
       setEmail(stored);
     }
+
+    return () => {
+      dispatch(clearUsersResponse());
+      dispatch(clearUsersError());
+    };
   }, [dispatch]);
 
   useEffect(() => {
-    if (usersResponse && !sessionStorage.getItem("forgotPasswordEmail")) {
+    if (usersResponse) {
       sessionStorage.setItem("forgotPasswordEmail", email);
-      sessionStorage.setItem("verifyEmailSentAt", Date.now());
+      sessionStorage.setItem("verifyPasswordSentAt", Date.now());
       navigate("/reset-password");
     }
   }, [usersResponse, email, navigate]);
@@ -38,11 +44,10 @@ const ForgotPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!sessionStorage.getItem("forgotPasswordEmail"))
-      dispatch(postForgotPasswordRequest({ email }));
-    else {
-      sessionStorage.setItem("forgotPasswordEmail", email);
+    if (sessionStorage.getItem("forgotPasswordEmail"))
       navigate("/reset-password");
+    else {
+      dispatch(postForgotPasswordRequest({ email }));
     }
   };
 
@@ -56,7 +61,7 @@ const ForgotPassword = () => {
           Ingresa tu correo para recibir un código de recuperación.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
           <div className="form-control">
             <label htmlFor="email" className="label text-neutral-300">
               Correo electrónico

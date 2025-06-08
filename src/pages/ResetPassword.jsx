@@ -6,6 +6,7 @@ import { formatTime } from "../helpers/formatTime";
 import { useDispatch, useSelector } from "react-redux";
 import * as usersSelector from "../services/redux/users/selectors";
 import {
+  clearUsersResponse,
   clearUsersError,
   postResetPasswordRequest,
   postForgotPasswordRequest,
@@ -39,14 +40,20 @@ const ResetPassword = () => {
   const usersType = useSelector(usersSelector.selectType);
 
   useEffect(() => {
-    const stored = sessionStorage.getItem("_payloadReset");
-
-    if (stored) setBody(JSON.parse(stored));
+    restartTimer();
   }, []);
 
   useEffect(() => {
+    return () => {
+      dispatch(clearUsersResponse());
+      dispatch(clearUsersError());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
     if (usersResponse?.success && usersType == "resetPassword") {
-      sessionStorage.clear();
+      sessionStorage.removeItem("forgotPasswordEmail");
+      sessionStorage.removeItem("verifyPasswordSentAt");
       setError("");
       navigate("/login");
     }
@@ -109,9 +116,6 @@ const ResetPassword = () => {
   };
 
   const handleBack = () => {
-    sessionStorage.setItem("_payloadReset", JSON.stringify(body));
-    setError("");
-    dispatch(clearUsersError());
     navigate("/forgot-password");
   };
 
@@ -125,7 +129,7 @@ const ResetPassword = () => {
           Ingresa el código enviado a <strong>{email}</strong>
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
           <div className="flex justify-center gap-2">
             {code.map((digit, index) => (
               <input

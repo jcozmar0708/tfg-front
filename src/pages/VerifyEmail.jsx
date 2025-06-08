@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import useCountdownTimer from "../hooks/useCountdownTimer";
 import {
+  clearUsersResponse,
+  clearUsersError,
   postVerifyEmailRequest,
   postResendVerificationCodeRequest,
 } from "../services/redux/users/actions";
@@ -24,8 +26,16 @@ const VerifyEmail = ({ email, onBack }) => {
   const usersType = useSelector(usersSelector.selectType);
 
   useEffect(() => {
+    return () => {
+      dispatch(clearUsersResponse());
+      dispatch(clearUsersError());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
     if (usersResponse?.success && usersType == "verifyEmail") {
-      sessionStorage.clear()
+      sessionStorage.removeItem("_payloadRegister");
+      sessionStorage.removeItem("verifyEmailSentAt");
       navigate("/login");
     }
   }, [usersResponse, usersType, navigate]);

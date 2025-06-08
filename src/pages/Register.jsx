@@ -2,9 +2,14 @@ import { useEffect, useState } from "react";
 import Icon from "../components/Icon";
 import VerifyEmail from "./VerifyEmail";
 import { useDispatch, useSelector } from "react-redux";
-import { postRegisterRequest } from "../services/redux/users/actions";
+import {
+  clearUsersResponse,
+  clearUsersError,
+  postRegisterRequest,
+} from "../services/redux/users/actions";
 import * as usersSelector from "../services/redux/users/selectors";
 import Loading from "./Loading";
+import { formatPhoneNumber } from "../helpers/formatPhoneNumber";
 
 const Register = () => {
   const [step, setStep] = useState("form");
@@ -26,7 +31,7 @@ const Register = () => {
   const usersResponse = useSelector(usersSelector.selectResponse);
   const usersLoading = useSelector(usersSelector.selectLoading);
   const usersError = useSelector(usersSelector.selectError);
-  const usersType = useSelector(usersSelector.selectType)
+  const usersType = useSelector(usersSelector.selectType);
 
   useEffect(() => {
     const stored = sessionStorage.getItem("_payloadRegister");
@@ -37,6 +42,13 @@ const Register = () => {
       setStep("verify");
     }
   }, []);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearUsersResponse());
+      dispatch(clearUsersError());
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (usersResponse && usersType == "register") {
@@ -60,6 +72,15 @@ const Register = () => {
     setBody((prev) => ({
       ...prev,
       [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handlePhoneChange = (e) => {
+    const cleaned = e.target.value.replace(/[^\d+]/g, "");
+    const formatted = formatPhoneNumber(cleaned);
+    setBody((prev) => ({
+      ...prev,
+      phone: formatted,
     }));
   };
 
@@ -101,7 +122,11 @@ const Register = () => {
             <div className="h-2 bg-violet-500 transition-all duration-500 w-1/2" />
           </div>
 
-          <form onSubmit={handleRegisterSubmit} className="space-y-4">
+          <form
+            onSubmit={handleRegisterSubmit}
+            className="space-y-4"
+            autoComplete="off"
+          >
             <div className="form-control">
               <label htmlFor="fullName" className="label text-neutral-300">
                 Nombre completo
@@ -127,7 +152,7 @@ const Register = () => {
                 name="phone"
                 type="tel"
                 value={body.phone}
-                onChange={handleChange}
+                onChange={handlePhoneChange}
                 required
                 placeholder="XXXXXXXXX"
                 className="input input-bordered w-full bg-neutral-700 text-white border-neutral-600"

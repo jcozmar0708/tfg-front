@@ -24,19 +24,21 @@ const Login = () => {
   const authError = useSelector(authSelector.selectError);
 
   useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const token = searchParams.get("inviteToken");
+
+    if (token) {
+      sessionStorage.setItem("_invite-token", token);
+    }
+  }, [location.search]);
+
+  useEffect(() => {
     dispatch(clearAuthError());
-    sessionStorage.clear();
 
     return () => {
       dispatch(clearAuthError());
     };
   }, [dispatch]);
-
-  useEffect(() => {
-    if (sessionStorage.getItem("_auth-session-token")) {
-      navigate("/groups");
-    }
-  }, [navigate]);
 
   useEffect(() => {
     if (authError) {
@@ -48,7 +50,7 @@ const Login = () => {
 
   useEffect(() => {
     if (authResponse) {
-      sessionStorage.setItem("_auth-session-token", authResponse.accessToken);
+      localStorage.setItem("_auth-session-token", authResponse.accessToken);
       navigate("/groups");
     }
   }, [authResponse, navigate]);
@@ -72,7 +74,7 @@ const Login = () => {
           Bienvenido a Amedias
         </h2>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmit} autoComplete="off">
           <div className="form-control">
             <label htmlFor="email" className="label">
               <span className="label-text text-neutral-300">
