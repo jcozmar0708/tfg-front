@@ -8,6 +8,20 @@ export const clearUsersError = () => ({
   type: Type.CLEAR_USERS_ERROR,
 });
 
+export const getProfileRequest = () => ({
+  type: Type.GET_PROFILE_REQUEST,
+});
+
+export const getProfileSuccess = (response) => ({
+  type: Type.GET_PROFILE_SUCCESS,
+  payload: response,
+});
+
+export const getProfileFailure = (error) => ({
+  type: Type.GET_PROFILE_REQUEST,
+  payload: error,
+});
+
 export const postRegisterRequest = (body) => ({
   type: Type.POST_REGISTER_REQUEST,
   payload: body,
@@ -80,5 +94,20 @@ export const postResetPasswordSuccess = (response) => ({
 
 export const postResetPasswordFailure = (error) => ({
   type: Type.POST_RESET_PASSWORD_FAILURE,
+  payload: error,
+});
+
+export const patchUpdateProfileRequest = (body) => ({
+  type: Type.PATCH_UPDATE_PROFILE_REQUEST,
+  payload: body,
+});
+
+export const patchUpdateProfileSuccess = (response) => ({
+  type: Type.PATCH_UPDATE_PROFILE_SUCCESS,
+  payload: response,
+});
+
+export const patchUpdateProfileFailure = (error) => ({
+  type: Type.PATCH_UPDATE_PROFILE_FAILURE,
   payload: error,
 });

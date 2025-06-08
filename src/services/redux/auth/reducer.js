@@ -2,12 +2,15 @@ import * as Type from "./types";
 
 const initialState = {
   response: null,
-  loading: null,
+  loading: false,
   error: null,
 };
 
 export const authReducer = (state = initialState, action) => {
   switch (action.type) {
+    case Type.CLEAR_AUTH_RESPONSE:
+      return { ...state, response: null };
+
     case Type.CLEAR_AUTH_ERROR:
       return { ...state, error: null };
 

@@ -1,8 +1,12 @@
 import * as Type from "./types";
 
+export const clearAuthResponse = () => ({
+  type: Type.CLEAR_AUTH_RESPONSE,
+});
+
 export const clearAuthError = () => ({
-  type: Type.CLEAR_AUTH_ERROR
-})
+  type: Type.CLEAR_AUTH_ERROR,
+});
 
 export const postLoginRequest = (body) => ({
   type: Type.POST_LOGIN_REQUEST,

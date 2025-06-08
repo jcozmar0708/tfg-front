@@ -2,7 +2,7 @@ import * as Type from "./types";
 
 const initialState = {
   response: null,
-  loading: null,
+  loading: false,
   error: null,
   type: null,
 };
@@ -29,12 +29,14 @@ export const usersReducer = (state = initialState, action) => {
         type: "resendVerificationCode",
       };
 
+    case Type.GET_PROFILE_REQUEST:
     case Type.POST_FORGOT_PASSWORD_REQUEST:
       return { ...state, loading: true, error: null };
 
     case Type.POST_RESET_PASSWORD_REQUEST:
       return { ...state, loading: true, error: null, type: "resetPassword" };
 
+    case Type.GET_PROFILE_SUCCESS:
     case Type.POST_REGISTER_SUCCESS:
     case Type.POST_VERIFY_EMAIL_SUCCESS:
     case Type.POST_RESEND_VERIFICATION_CODE_SUCCESS:
@@ -42,6 +44,7 @@ export const usersReducer = (state = initialState, action) => {
     case Type.POST_RESET_PASSWORD_SUCCESS:
       return { ...state, loading: false, response: action.payload };
 
+    case Type.GET_PROFILE_FAILURE:
     case Type.POST_REGISTER_FAILURE:
     case Type.POST_VERIFY_EMAIL_FAILURE:
     case Type.POST_RESEND_VERIFICATION_CODE_FAILURE:
