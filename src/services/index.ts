@@ -23,3 +23,20 @@ export const USERS = () => ({
 
   PATCH_UPDATE_PROFILE: `${BASIC_URL}/users/update-profile`,
 });
+
+export const GROUPS = (id?: string, email?: string) => ({
+  GET_GROUPS: `${BASIC_URL}/groups`,
+
+  GET_GROUPS_DETAIL: id ? `${BASIC_URL}/groups/${id}` : "",
+
+  POST_CREATE_GROUP: `${BASIC_URL}/groups`,
+
+  POST_JOIN_GROUP: id ? `${BASIC_URL}/groups/join/${id}` : "",
+
+  POST_ADD_USERS: id ? `${BASIC_URL}/groups/${id}/add-user` : "",
+
+  PATCH_NAME: id ? `${BASIC_URL}/groups/${id}` : "",
+
+  DELETE_USER:
+    id && email ? `${BASIC_URL}/groups/${id}/remove-user/${email}` : "",
+});
