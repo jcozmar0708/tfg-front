@@ -4,8 +4,6 @@ export const AUTH = () => ({
   POST_LOGIN: `${BASIC_URL}/auth/login`,
 
   DELETE_LOGOUT: `${BASIC_URL}/auth/logout`,
-
-  DELETE_LOGOUT_ALL: `${BASIC_URL}/auth/logout-all`,
 });
 
 export const USERS = () => ({
@@ -39,4 +37,18 @@ export const GROUPS = (id?: string, email?: string) => ({
 
   DELETE_USER:
     id && email ? `${BASIC_URL}/groups/${id}/remove-user/${email}` : "",
+});
+
+export const EXPENSES = () => ({
+  GET_USER_DEBTS: `${BASIC_URL}/expenses/debts`,
+
+  POST_CREATE_EXPENSE: `${BASIC_URL}/expenses`,
+
+  POST_PAY_IN_CASH: `${BASIC_URL}/expenses/pay-in-cash`,
+});
+
+export const PAYMENTS = () => ({
+  POST_ORDER: `${BASIC_URL}/payments/order`,
+
+  POST_CAPTURE: `${BASIC_URL}/payments/capture`,
 });
