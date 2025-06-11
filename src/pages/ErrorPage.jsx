@@ -9,7 +9,7 @@ const statusMessages = {
   },
   404: {
     title: "Página no encontrada",
-    message: "La página que buscas no existe o ha sido movida.",
+    message: "La página que buscas no existe.",
   },
   500: {
     title: "Error del servidor",

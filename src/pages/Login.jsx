@@ -34,6 +34,7 @@ const Login = () => {
 
   useEffect(() => {
     dispatch(clearAuthError());
+    sessionStorage.removeItem("_selectedGroupId");
 
     return () => {
       dispatch(clearAuthError());

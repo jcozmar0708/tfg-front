@@ -20,6 +20,7 @@ const EditProfile = () => {
   const usersResponse = useSelector(usersSelector.selectResponse);
   const usersLoading = useSelector(usersSelector.selectLoading);
   const usersError = useSelector(usersSelector.selectError);
+  const usersType = useSelector(usersSelector.selectType);
 
   const [body, setBody] = useState({
     fullName: "",
@@ -32,6 +33,8 @@ const EditProfile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  sessionStorage.removeItem("_selectedGroupId");
+
   useEffect(() => {
     dispatch(getProfileRequest());
     return () => {
@@ -39,6 +42,12 @@ const EditProfile = () => {
       dispatch(clearUsersResponse());
     };
   }, [dispatch]);
+
+  useEffect(() => {
+    if (usersResponse && usersType === "updateProfile") {
+      navigate("/groups");
+    }
+  }, [usersResponse, usersType, navigate]);
 
   useEffect(() => {
     if (usersResponse) {

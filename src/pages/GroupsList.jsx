@@ -27,7 +27,9 @@ const GroupsList = () => {
 
   const hasJoinedWithToken = useRef(false);
 
-  const [selectedGroupId, setSelectedGroupId] = useState(null);
+  const [selectedGroupId, setSelectedGroupId] = useState(
+    sessionStorage.getItem("_selectedGroupId")
+  );
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -70,6 +72,7 @@ const GroupsList = () => {
   const handleLogout = () => {
     dispatch(deleteLogoutRequest());
     localStorage.removeItem("_auth-session-token");
+    sessionStorage.clear();
     navigate("/login");
   };
 
