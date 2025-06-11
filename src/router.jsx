@@ -8,6 +8,8 @@ import CreateGroup from "./pages/CreateGroup";
 import EditProfile from "./pages/EditProfile";
 import AddUsersToGroup from "./pages/AddUsersToGroup";
 import ErrorPage from "./pages/ErrorPage";
+import CancelPayment from "./pages/CancelPayment";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const AppRouter = () => {
   return (
@@ -26,6 +28,9 @@ const AppRouter = () => {
       />
 
       <Route path="/edit-profile" element={<EditProfile />} />
+
+      <Route path="/paypal/success" element={<PaymentSuccess />} />
+      <Route path="/paypal/cancel" element={<CancelPayment />} />
 
       <Route path="/error" element={<ErrorPage />} />
 
