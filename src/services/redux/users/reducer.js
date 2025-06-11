@@ -29,6 +29,9 @@ export const usersReducer = (state = initialState, action) => {
         type: "resendVerificationCode",
       };
 
+    case Type.PATCH_UPDATE_PROFILE_REQUEST:
+      return { ...state, loading: true, error: null, type: "updateProfile" };
+
     case Type.GET_PROFILE_REQUEST:
     case Type.POST_FORGOT_PASSWORD_REQUEST:
       return { ...state, loading: true, error: null };
@@ -42,6 +45,7 @@ export const usersReducer = (state = initialState, action) => {
     case Type.POST_RESEND_VERIFICATION_CODE_SUCCESS:
     case Type.POST_FORGOT_PASSWORD_SUCCESS:
     case Type.POST_RESET_PASSWORD_SUCCESS:
+    case Type.PATCH_UPDATE_PROFILE_SUCCESS:
       return { ...state, loading: false, response: action.payload };
 
     case Type.GET_PROFILE_FAILURE:
@@ -50,6 +54,7 @@ export const usersReducer = (state = initialState, action) => {
     case Type.POST_RESEND_VERIFICATION_CODE_FAILURE:
     case Type.POST_FORGOT_PASSWORD_FAILURE:
     case Type.POST_RESET_PASSWORD_FAILURE:
+    case Type.PATCH_UPDATE_PROFILE_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
     default:

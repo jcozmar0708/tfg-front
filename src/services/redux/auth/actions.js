@@ -35,16 +35,3 @@ export const deleteLogoutFailure = (error) => ({
   type: Type.DELETE_LOGOUT_FAILURE,
   payload: error,
 });
-
-export const deleteLogoutAllRequest = () => ({
-  type: Type.DELETE_LOGOUT_ALL_REQUEST,
-});
-
-export const deleteLogoutAllSuccess = () => ({
-  type: Type.DELETE_LOGOUT_ALL_SUCCESS,
-});
-
-export const deleteLogoutAllFailure = (error) => ({
-  type: Type.DELETE_LOGOUT_ALL_FAILURE,
-  payload: error,
-});
